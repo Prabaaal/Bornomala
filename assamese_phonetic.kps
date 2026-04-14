@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package>
+  <System>
+    <KeymanDeveloperVersion>17.0</KeymanDeveloperVersion>
+    <FileVersion>7.0</FileVersion>
+  </System>
+  <Options>
+    <ExecuteProgram></ExecuteProgram>
+    <ReadMeFile>README_assamese_keyboard.md</ReadMeFile>
+    <MSIFileName></MSIFileName>
+    <MSIOptions></MSIOptions>
+  </Options>
+  <StartMenu>
+    <Folder></Folder>
+    <Items/>
+  </StartMenu>
+  <Info>
+    <Name URL="">Assamese Phonetic</Name>
+    <Copyright URL="">Free to use</Copyright>
+    <Author URL="">Bornomala Project</Author>
+    <Version>1.1</Version>
+  </Info>
+  <Files>
+    <File>
+      <Name>assamese_phonetic.kmx</Name>
+      <Description></Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.kmx</FileType>
+    </File>
+    <File>
+      <Name>README_assamese_keyboard.md</Name>
+      <Description></Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.md</FileType>
+    </File>
+  </Files>
+  <Keyboards>
+    <Keyboard>
+      <Name>Assamese Phonetic</Name>
+      <ID>assamese_phonetic</ID>
+      <Version>1.0</Version>
+      <Languages>
+        <Language ID="as">Assamese</Language>
+      </Languages>
+    </Keyboard>
+  </Keyboards>
+  <Strings/>
+</Package>
