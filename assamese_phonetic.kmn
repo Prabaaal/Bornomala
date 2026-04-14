@@ -1,0 +1,105 @@
+c ============================================================
+c  Assamese Phonetic Keyboard (Transliteration)
+c  Version 1.1
+c ============================================================
+
+store(&VERSION) "10.0"
+store(&NAME)    "Assamese Phonetic"
+store(&COPYRIGHT) "Free to use"
+store(&TARGETS)   "any"
+
+begin Unicode > use(main)
+
+group(main) using keys
+
+store(consonants) 'কখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযৰলৱশষসহক্ষজ্ঞ'
+
+c --- Digraphs (Aspirates, etc.) ---
+'ক' + 'h' > 'খ'
+'গ' + 'h' > 'ঘ'
+'চ' + 'h' > 'ছ'
+'জ' + 'h' > 'ঝ'
+'ট' + 'h' > 'ঠ'
+'ড' + 'h' > 'ঢ'
+'ত' + 'h' > 'থ'
+'দ' + 'h' > 'ধ'
+'প' + 'h' > 'ফ'
+'ব' + 'h' > 'ভ'
+'স' + 'h' > 'শ'
+'শ' + 'h' > 'ষ'
+'ন' + 'g' > 'ঙ'
+'ন' + 'y' > 'ঞ'
+'ৰ' + 'r' > 'ড়'
+'ৰ' + 'h' > 'ঢ়'
+
+c --- Base Consonants ---
++ 'k' > 'ক'
++ 'g' > 'গ'
++ 'c' > 'চ'
++ 'j' > 'জ'
++ 't' > 'ত'
++ 'T' > 'ট'
++ 'd' > 'দ'
++ 'D' > 'ড'
++ 'n' > 'ন'
++ 'N' > 'ণ'
++ 'p' > 'প'
++ 'b' > 'ব'
++ 'm' > 'ম'
++ 'y' > 'য'
++ 'r' > 'ৰ'
++ 'l' > 'ল'
++ 's' > 'স'
++ 'S' > 'শ'
++ 'h' > 'হ'
++ 'w' > 'ৱ'
++ 'x' > 'ক্ষ'
++ 'v' > 'ভ'
++ 'f' > 'ফ'
++ 'z' > 'জ'
++ 'q' > 'ক'
+
+c --- Vowel Matras (after consonants) ---
+any(consonants) + 'a' > context 'া'
+any(consonants) 'া' + 'a' > context
+any(consonants) + 'i' > context 'ি'
+any(consonants) 'ি' + 'i' > index(consonants, 1) 'ী'
+any(consonants) + 'u' > context 'ু'
+any(consonants) 'ু' + 'u' > index(consonants, 1) 'ূ'
+any(consonants) + 'e' > context 'ে'
+any(consonants) + 'o' > context 'ো'
+any(consonants) 'ো' + 'i' > index(consonants, 1) 'ৈ'
+any(consonants) 'ো' + 'u' > index(consonants, 1) 'ৌ'
+
+c --- Standalone Vowels ---
++ 'a' > 'অ'
+'অ' + 'a' > 'আ'
++ 'i' > 'ই'
+'ই' + 'i' > 'ঈ'
++ 'u' > 'উ'
+'উ' + 'u' > 'ঊ'
++ 'e' > 'এ'
++ 'o' > 'ও'
+'ও' + 'i' > 'ঐ'
+'ও' + 'u' > 'ঔ'
+'ৰ' + 'i' > 'ঋ'
+
+c --- Numerals ---
++ '0' > '০'
++ '1' > '১'
++ '2' > '২'
++ '3' > '৩'
++ '4' > '৪'
++ '5' > '৫'
++ '6' > '৬'
++ '7' > '৭'
++ '8' > '৮'
++ '9' > '৯'
+
+c --- Specials / Diacritics ---
++ '~' > '্'
++ '|' > '।'
+'।' + '|' > '॥'
++ 'M' > 'ঁ'
++ 'H' > 'ঃ'
++ '`' > U+200D
