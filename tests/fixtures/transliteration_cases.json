@@ -1,0 +1,37 @@
+[
+  {
+    "input": "kha",
+    "expected": "খ",
+    "reason": "Bare a after a consonant uses the inherent vowel and does not append the aa-matra."
+  },
+  {
+    "input": "kaa",
+    "expected": "কা",
+    "reason": "Explicit aa after a consonant uses the aa-matra."
+  },
+  {
+    "input": "mor",
+    "expected": "মোৰ",
+    "reason": "A vowel after a consonant should become a matra in the middle of a token."
+  },
+  {
+    "input": "mur naam",
+    "expected": "মুৰ নাম",
+    "reason": "Token boundaries preserve spaces and apply context per word."
+  },
+  {
+    "input": "k~t",
+    "expected": "ক্ত",
+    "reason": "Virama should still create conjuncts."
+  },
+  {
+    "input": "bhaal",
+    "expected": "ভাল",
+    "reason": "Dictionary fallback should prefer a known word over a lower-confidence literal form."
+  },
+  {
+    "input": "123",
+    "expected": "১২৩",
+    "reason": "Numeral mapping must remain intact."
+  }
+]
