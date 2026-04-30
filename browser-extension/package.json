@@ -1,0 +1,21 @@
+{
+  "name": "bornomala-browser-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "clean": "rm -rf dist .tmp-playwright",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "node --import tsx --test tests/**/*.test.ts",
+    "test:integration": "playwright test",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "@types/chrome": "^0.1.24",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2",
+    "tsx": "^4.20.5"
+  }
+}

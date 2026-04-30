@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bornomala Fixture</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2rem;
+      }
+
+      textarea,
+      input,
+      [contenteditable="true"] {
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
+        min-height: 5rem;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="plain-textarea">Plain textarea</label>
+    <textarea id="plain-textarea"></textarea>
+
+    <label for="plain-input">Plain input</label>
+    <input id="plain-input" />
+
+    <div id="editable" contenteditable="true"></div>
+  </body>
+</html>
