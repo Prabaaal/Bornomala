@@ -1,5 +1,9 @@
 .DS_Store
 .worktrees/
+browser-extension/.tmp-playwright/
+browser-extension/dist/
+browser-extension/node_modules/
+browser-extension/test-results/
 build/
 dist/
 __pycache__/

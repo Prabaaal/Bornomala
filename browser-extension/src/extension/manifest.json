@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Bornomala",
+  "description": "Toggle Assamese phonetic typing on supported websites and browser code editors.",
+  "version": "0.1.0",
+  "permissions": ["storage", "tabs", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/extension/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Bornomala",
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "toggle-bornomala": {
+      "suggested_key": {
+        "default": "Alt+B",
+        "mac": "Command+Shift+B"
+      },
+      "description": "Toggle Bornomala on the current site"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/extension/content-script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/extension/page-bridge.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
