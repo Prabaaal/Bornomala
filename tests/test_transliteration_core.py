@@ -31,6 +31,11 @@ class TransliterationEngineTests(unittest.TestCase):
         self.assertTrue(result.used_dictionary)
         self.assertIn("bhaal", result.dictionary_hits)
 
+    def test_dictionary_does_not_override_known_primary_match(self):
+        result = self.engine.transliterate("kaa")
+        self.assertEqual(result.text, "কা")
+        self.assertFalse(result.used_dictionary)
+
 
 if __name__ == "__main__":
     unittest.main()

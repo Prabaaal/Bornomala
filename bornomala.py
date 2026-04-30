@@ -18,149 +18,10 @@ Author: Built for Prabal Gogoi
 
 import tkinter as tk
 from tkinter import font as tkfont
-
-# ─────────────────────────────────────────────────────────────────
-#  TRANSLITERATION ENGINE  (with proper Indic matra handling)
-# ─────────────────────────────────────────────────────────────────
-
-# Standalone vowels (used at word start / after space)
-VOWEL_STANDALONE = {
-    "aa": "আ",  "ii": "ঈ",  "uu": "ঊ",
-    "oi": "ঐ",  "ou": "ঔ",  "ri": "ঋ",
-    "a":  "অ",  "i":  "ই",  "u":  "উ",
-    "e":  "এ",  "o":  "ও",
-}
-
-# Vowel signs / matras (used after a consonant)
-VOWEL_MATRA = {
-    "aa": "া",  "ii": "ী",  "uu": "ূ",
-    "oi": "ৈ",  "ou": "ৌ",  "ri": "ৃ",
-    "a":  "া",  "i":  "ি",  "u":  "ু",
-    "e":  "ে",  "o":  "ো",
-    # inherent-a: no matra (default — adding no matra means "a" sound)
-    # But we output it explicitly when user types 'a' after consonant
-    # NOTE: bare 'a' after consonant usually means inherent vowel is present — skip?
-    # We'll output 'া' for 'a' too so typing is predictable.
-}
-
-# Consonants (base characters)
-CONSONANTS = [
-    ("kh",  "খ"), ("gh",  "ঘ"), ("ng",  "ঙ"),
-    ("ch",  "ছ"), ("jh",  "ঝ"), ("nj",  "ঞ"), ("ny",  "ঞ"),
-    ("Th",  "ঠ"), ("Dh",  "ঢ"), ("th",  "থ"), ("dh",  "ধ"),
-    ("ph",  "ফ"), ("bh",  "ভ"), ("sh",  "শ"), ("Sh",  "ষ"),
-    ("rr",  "ড়"), ("rh",  "ঢ়"), ("gy",  "জ্ঞ"), ("kS",  "ক্ষ"),
-    ("k",   "ক"), ("g",   "গ"), ("c",   "চ"), ("j",   "জ"),
-    ("T",   "ট"), ("D",   "ড"), ("N",   "ণ"), ("t",   "ত"),
-    ("d",   "দ"), ("n",   "ন"), ("p",   "প"), ("b",   "ব"),
-    ("m",   "ম"), ("y",   "য"), ("r",   "ৰ"), ("l",   "ল"),
-    ("w",   "ৱ"), ("s",   "স"), ("S",   "শ"), ("h",   "হ"),
-    ("x",   "ক্ষ"), ("v",  "ভ"), ("f",   "ফ"), ("z",   "জ"),
-    ("q",   "ক"),
-]
-
-# Specials: pass-through or mapped directly
-SPECIALS = [
-    ("||", "॥"),
-    ("|",  "।"),
-    ("~",  "\u09CD"),  # hasanta / virama ্
-    ("`",  "\u200D"),  # ZWJ for conjuncts
-    ("M",  "ঁ"),       # chandrabindu
-    ("H",  "ঃ"),       # visarga
-]
-
-NUMERALS = [
-    ("0","০"),("1","১"),("2","২"),("3","৩"),("4","৪"),
-    ("5","৫"),("6","৬"),("7","৭"),("8","৮"),("9","৯"),
-]
-
-# Sorted consonant list longest-first for greedy matching
-_CONSONANTS_SORTED = sorted(CONSONANTS, key=lambda r: -len(r[0]))
-_VOWELS_SORTED     = sorted(VOWEL_STANDALONE.items(), key=lambda r: -len(r[0]))
-_SPECIALS_SORTED   = sorted(SPECIALS, key=lambda r: -len(r[0]))
-_NUMERALS_SORTED   = sorted(NUMERALS, key=lambda r: -len(r[0]))
-
-# Combined set of all consonant keys (for "is_consonant" checks)
-_CONSONANT_KEYS = set(lat for lat, _ in CONSONANTS)
+from transliteration_core import TransliterationEngine
 
 
-def _match(text: str, i: int, candidates):
-    """Try to match any candidate at position i. Returns (latin, char) or None."""
-    for latin, char in candidates:
-        if text[i:i + len(latin)] == latin:
-            return latin, char
-    return None
-
-
-def convert(text: str) -> str:
-    """
-    Convert Latin phonetic text to Assamese Unicode.
-    Handles:
-      - Standalone vowels at start or after non-consonant
-      - Vowel matras after consonants (ক + া = কা)
-      - Inherent 'a' suppression (virama ~ for conjuncts)
-      - Numerals, specials, pass-through for unrecognized chars
-    """
-    result = []
-    i = 0
-    last_was_consonant = False   # track context for matra vs standalone vowel
-
-    while i < len(text):
-        ch = text[i]
-
-        # ── Specials first ──
-        m = _match(text, i, _SPECIALS_SORTED)
-        if m:
-            latin, char = m
-            # Virama after consonant → suppress inherent 'a' (enable conjunct)
-            result.append(char)
-            last_was_consonant = False
-            i += len(latin)
-            continue
-
-        # ── Numerals ──
-        m = _match(text, i, _NUMERALS_SORTED)
-        if m:
-            latin, char = m
-            result.append(char)
-            last_was_consonant = False
-            i += len(latin)
-            continue
-
-        # ── Consonants ──
-        m = _match(text, i, _CONSONANTS_SORTED)
-        if m:
-            latin, char = m
-            result.append(char)
-            last_was_consonant = True
-            i += len(latin)
-            continue
-
-        # ── Vowels ──
-        m = _match(text, i, _VOWELS_SORTED)
-        if m:
-            latin, standalone = m
-            if last_was_consonant:
-                # Use matra (vowel sign) form
-                # Special case: 'a' after consonant = inherent vowel = no extra char
-                # But for user predictability we DO add া so "ka" → কা not ক
-                matra = VOWEL_MATRA.get(latin, standalone)
-                # But bare 'a' after consonant is the inherent vowel in real Assamese.
-                # Most phonetic keyboards add matra for 'a' too (more intuitive).
-                result.append(matra)
-            else:
-                result.append(standalone)
-            last_was_consonant = False
-            i += len(latin)
-            continue
-
-        # ── Space / punctuation / other → pass through ──
-        result.append(ch)
-        # Space resets consonant context
-        last_was_consonant = False
-        i += 1
-
-    return "".join(result)
+ENGINE = TransliterationEngine()
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -447,14 +308,19 @@ class BornomalaApp:
             self.input_text.edit_modified(False)
             return
         self._last_raw = raw
-        assamese = convert(raw) if raw else ""
+        result = ENGINE.transliterate(raw) if raw else None
+        assamese = result.text if result else ""
         self.output_text.config(state="normal")
         self.output_text.delete("1.0", "end")
         if assamese:
             self.output_text.insert("1.0", assamese)
         self.output_text.config(state="disabled")
-        c = len([ch for ch in assamese if ch.strip()])
-        self.status_var.set(f"✓  {len(raw)} Latin chars  →  {c} Assamese chars")
+        if result and result.used_dictionary:
+            hits = ", ".join(result.dictionary_hits)
+            self.status_var.set(f"✓  Dictionary-assisted output for: {hits}")
+        else:
+            c = len([ch for ch in assamese if ch.strip()])
+            self.status_var.set(f"✓  {len(raw)} Latin chars  →  {c} Assamese chars")
         self.input_text.edit_modified(False)
 
     def _get_raw(self):
