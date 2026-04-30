@@ -73,6 +73,14 @@ import 'package:flutter_js/flutter_js.dart';
 
 ## Transliteration rules summary
 
+## Smart transliteration mode
+
+- Bare `a` after a consonant now uses the inherent vowel by default, so `kha` becomes `খ`
+- Explicit long vowels still use matras, so `kaa` becomes `কা`
+- Word tokens are evaluated independently, which improves forms like `mor` → `মোৰ`
+- A small offline Assamese dictionary is used only as a fallback for ambiguous spellings
+- The desktop app status bar shows when dictionary assistance was used
+
 ### Vowels
 | Type | Latin | Assamese |
 |---|---|---|
