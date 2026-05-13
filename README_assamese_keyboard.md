@@ -22,6 +22,7 @@ Keyman is free, trusted, and works system-wide — in Word, browsers, everywhere
 2. File → Open → select `assamese_phonetic.kmn`
 3. Build → Compile Keyboard
 4. This produces `assamese_phonetic.kmx` (Windows) or `assamese_phonetic.kmp`
+5. Reinstall the newly built package in Keyman Desktop to pick up any source changes
 
 ### Step 3: Install the compiled keyboard
 - On Windows: double-click the `.kmp` package file → Keyman installs it
@@ -60,6 +61,28 @@ function AssameseInput() {
 }
 ```
 
+## Option C: Chrome Extension
+
+The repo now includes a lightweight Chrome extension in [`chrome-extension`](/Users/prabalgogoi/Assamese%20Keyboard/Bornomala/chrome-extension) for direct Assamese typing inside webpage text fields.
+
+### Load it in Chrome
+1. Open `chrome://extensions`
+2. Turn on Developer mode
+3. Click `Load unpacked`
+4. Select the `chrome-extension` folder
+5. Open the extension popup and enable `Assamese Typing`
+
+### What it supports
+- Standard text inputs
+- Search, email, URL, and telephone inputs
+- `textarea`
+- Basic `contenteditable` regions
+
+### What it does not target yet
+- Complex editors such as Google Docs
+- Per-site enable/disable rules
+- Candidate suggestions or advanced IME controls
+
 ### In your Flutter PWA (with a WebView or Flutter Web text field)
 ```dart
 // In Flutter Web, use a HtmlElementView wrapping a <textarea>
@@ -80,6 +103,13 @@ import 'package:flutter_js/flutter_js.dart';
 - Word tokens are evaluated independently, which improves forms like `mor` → `মোৰ`
 - A small offline Assamese dictionary is used only as a fallback for ambiguous spellings
 - The desktop app status bar shows when dictionary assistance was used
+
+## Keyman parity notes
+
+- The Keyman source now mirrors the rule-based inherent-vowel behavior used by the updated app, so bare `a` after a consonant is treated as the inherent vowel by default.
+- Example: `kha` should now produce `খ`, while `k` followed by `aa` should produce `কা`.
+- The dictionary-assisted fallback from the desktop app is not part of the Keyman keyboard source, so OS-level typing only gets the rule-based improvements.
+- Changes to `assamese_phonetic.kmn` do not update an installed Keyman keyboard automatically; you must compile and reinstall the package after source changes.
 
 ### Vowels
 | Type | Latin | Assamese |

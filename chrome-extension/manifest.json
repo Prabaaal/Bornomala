@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Bornomala Assamese Typing",
+  "version": "0.1.0",
+  "description": "Type Assamese phonetically in webpage text fields with a global on/off toggle.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_title": "Bornomala Assamese Typing",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "assamese_transliterator.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

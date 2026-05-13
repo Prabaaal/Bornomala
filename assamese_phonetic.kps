@@ -18,7 +18,7 @@
     <Name URL="">Assamese Phonetic</Name>
     <Copyright URL="">Free to use</Copyright>
     <Author URL="">Bornomala Project</Author>
-    <Version>1.1</Version>
+    <Version>1.2</Version>
   </Info>
   <Files>
     <File>
@@ -38,7 +38,7 @@
     <Keyboard>
       <Name>Assamese Phonetic</Name>
       <ID>assamese_phonetic</ID>
-      <Version>1.0</Version>
+      <Version>1.2</Version>
       <Languages>
         <Language ID="as">Assamese</Language>
       </Languages>
