@@ -1,132 +1,147 @@
-# Assamese Phonetic Keyboard — Build Guide
+# Bornomala
 
-## What's in this package
+Developer-first Assamese phonetic typing toolkit.
 
-| File | Purpose |
+Bornomala gives you multiple ways to type Assamese from Latin phonetics:
+
+- a system-wide Keyman keyboard
+- a reusable JavaScript transliteration engine
+- a lightweight Chrome extension you can load unpacked
+- a desktop Python app for local typing workflows
+
+This README is optimized for getting a developer productive quickly: what is in the repo, which path to choose, how to run it, and how to verify that it works.
+
+## Choose Your Path
+
+| If you want to... | Use this | Main files |
+|---|---|---|
+| Type Assamese system-wide in apps like Word or browsers | Keyman keyboard | `assamese_phonetic.kmn`, `assamese_phonetic.kmp`, `assamese_phonetic.kmx` |
+| Add Assamese phonetic input to a web app or script | JavaScript engine | `assamese_transliterator.js` |
+| Type directly inside webpage fields in Chrome | Chrome extension | `chrome-extension/` |
+| Use a local floating typing tool on desktop | Python app | `bornomala.py`, `dist/Bornomala` |
+
+## Repo Map
+
+| Path | Purpose |
 |---|---|
-| `assamese_phonetic.kmn` | Keyman source — compiles to a real OS-level keyboard |
-| `assamese_transliterator.js` | Pure JS engine — use in web apps, PWAs, React, etc. |
+| `assamese_phonetic.kmn` | Source for the Keyman keyboard |
+| `assamese_transliterator.js` | Shared JavaScript transliteration engine |
+| `transliteration_core.py` | Canonical Python transliteration engine |
+| `transliteration_data.py` | Shared transliteration tables and constants |
+| `data/assamese_dictionary.json` | Offline fallback dictionary for ambiguous spellings |
+| `bornomala.py` | Desktop app entry point |
+| `chrome-extension/` | Supported unpacked Chrome extension |
+| `tests/` | Python and Chrome extension tests |
+| `scripts/run_js_transliteration_tests.js` | JavaScript transliteration regression test runner |
+| `browser-extension/` | Experimental TypeScript prototype kept for reference, not the recommended setup path |
 
----
+## Quickstart
 
-## Option A: Keyman Keyboard (Windows + macOS) ← Recommended
+### 1. Clone and inspect
 
-Keyman is free, trusted, and works system-wide — in Word, browsers, everywhere.
+```bash
+git clone https://github.com/Prabaaal/Bornomala.git
+cd Bornomala
+```
 
-### Step 1: Install Keyman Developer
-- Download from: https://keyman.com/developer/
-- Available for Windows and macOS
+### 2. Pick the workflow you need
 
-### Step 2: Compile the keyboard
-1. Open Keyman Developer
-2. File → Open → select `assamese_phonetic.kmn`
-3. Build → Compile Keyboard
-4. This produces `assamese_phonetic.kmx` (Windows) or `assamese_phonetic.kmp`
-5. Reinstall the newly built package in Keyman Desktop to pick up any source changes
+#### Keyman keyboard
 
-### Step 3: Install the compiled keyboard
-- On Windows: double-click the `.kmp` package file → Keyman installs it
-- On macOS: same — double-click `.kmp` → Keyman Desktop installs it
-- Switch to it via the Keyman icon in your system tray / menu bar
+1. Install [Keyman Developer](https://keyman.com/developer/).
+2. Open `assamese_phonetic.kmn`.
+3. Compile the keyboard.
+4. Install the generated `.kmp` package in Keyman Desktop.
 
-### Usage
-- Press `Ctrl+Alt+K` (Windows) or `Cmd+Opt+K` (macOS) to toggle on/off
-- Type normally in any app — your Latin input becomes Assamese
+#### JavaScript engine
 
----
+Drop `assamese_transliterator.js` into a webpage or import it in Node/browser code.
 
-## Option B: JavaScript Engine (Web / PWA / Flutter)
-
-Use `assamese_transliterator.js` for any web-based input.
-
-### In a plain HTML page
 ```html
 <script src="assamese_transliterator.js"></script>
-<textarea id="box" rows="5" cols="40" placeholder="Type here..."></textarea>
+<textarea id="box" rows="5" cols="40" placeholder="Type Assamese phonetically"></textarea>
 <script>
-  const t = new AssameseTransliterator();
-  document.getElementById('box').addEventListener('input', e => t.handleInput(e.target));
+  const engine = new AssameseTransliterator();
+  document.getElementById("box").addEventListener("input", (event) => {
+    engine.handleInput(event.target);
+  });
 </script>
 ```
 
-### In React
-```jsx
-import { AssameseTransliterator } from './assamese_transliterator';
-const t = new AssameseTransliterator();
+#### Chrome extension
 
-function AssameseInput() {
-  const [value, setValue] = useState('');
-  const handleChange = (e) => setValue(t.convert(e.target.value));
-  return <textarea value={value} onChange={handleChange} />;
-}
-```
-
-## Option C: Chrome Extension
-
-The repo now includes a lightweight Chrome extension in [`chrome-extension`](/Users/prabalgogoi/Assamese%20Keyboard/Bornomala/chrome-extension) for direct Assamese typing inside webpage text fields.
-
-### Load it in Chrome
 1. Open `chrome://extensions`
 2. Turn on Developer mode
 3. Click `Load unpacked`
 4. Select the `chrome-extension` folder
-5. Open the extension popup and enable `Assamese Typing`
+5. Open the extension popup
+6. Enable `Assamese Typing`
 
-### What it supports
-- Standard text inputs
-- Search, email, URL, and telephone inputs
+Supported targets in v1:
+
+- `input[type="text"]`
+- `input[type="search"]`
+- `input[type="email"]`
+- `input[type="url"]`
+- `input[type="tel"]`
 - `textarea`
-- Basic `contenteditable` regions
+- basic `contenteditable` regions
 
-### What it does not target yet
-- Complex editors such as Google Docs
-- Per-site enable/disable rules
-- Candidate suggestions or advanced IME controls
+Not targeted yet:
 
-### In your Flutter PWA (with a WebView or Flutter Web text field)
-```dart
-// In Flutter Web, use a HtmlElementView wrapping a <textarea>
-// and inject the JS engine. Or call t.convert() from JS interop.
-import 'package:flutter_js/flutter_js.dart';
-// Load assamese_transliterator.js, then:
-// jsRuntime.evaluate("new AssameseTransliterator().convert('kha')") → "খ"
+- Google Docs
+- Notion-style rich editors
+- per-site toggles
+
+#### Desktop app
+
+Run the Python app directly:
+
+```bash
+python3 bornomala.py
 ```
 
----
+Or launch the packaged app from `dist/Bornomala` if you already have the built artifact available on your machine.
 
-## Transliteration rules summary
+## Transliteration Behavior
 
-## Smart transliteration mode
+Bornomala now uses context-aware transliteration logic instead of a simple character-for-character replacement.
 
-- Bare `a` after a consonant now uses the inherent vowel by default, so `kha` becomes `খ`
-- Explicit long vowels still use matras, so `kaa` becomes `কা`
-- Word tokens are evaluated independently, which improves forms like `mor` → `মোৰ`
-- A small offline Assamese dictionary is used only as a fallback for ambiguous spellings
-- The desktop app status bar shows when dictionary assistance was used
+### Smart mode
 
-## Keyman parity notes
+- Bare `a` after a consonant uses the inherent vowel by default.
+- `kha` becomes `খ`, not `খা`.
+- Explicit long vowels still use matras, so `kaa` becomes `কা`.
+- Words are evaluated token by token, which improves output like `mor` -> `মোৰ`.
+- An offline Assamese dictionary is used only as a fallback for ambiguous spellings.
 
-- The Keyman source now mirrors the rule-based inherent-vowel behavior used by the updated app, so bare `a` after a consonant is treated as the inherent vowel by default.
-- Example: `kha` should now produce `খ`, while `k` followed by `aa` should produce `কা`.
-- The dictionary-assisted fallback from the desktop app is not part of the Keyman keyboard source, so OS-level typing only gets the rule-based improvements.
-- Changes to `assamese_phonetic.kmn` do not update an installed Keyman keyboard automatically; you must compile and reinstall the package after source changes.
+### Keyman parity
+
+- The Keyman source mirrors the rule-based inherent-vowel behavior used by the updated app.
+- Example: `kha` should produce `খ`, while `k` followed by `aa` should produce `কা`.
+- Dictionary-assisted fallback is part of the app and JS engine path, not the installed Keyman keyboard path.
+- Changes to `assamese_phonetic.kmn` do not update an installed keyboard automatically; rebuild and reinstall the package after source edits.
+
+## Rules Reference
 
 ### Vowels
-| Type | Latin | Assamese |
-|---|---|---|
-| a  | `a`  | অ |
-| aa | `aa` | আ |
-| i  | `i`  | ই |
-| ii | `ii` | ঈ |
-| u  | `u`  | উ |
-| uu | `uu` | ঊ |
-| e  | `e`  | এ |
-| oi | `oi` | ঐ |
-| o  | `o`  | ও |
-| ou | `ou` | ঔ |
-| ri | `ri` | ঋ |
 
-### Key consonant pairs
+| Latin | Assamese |
+|---|---|
+| `a` | অ |
+| `aa` | আ |
+| `i` | ই |
+| `ii` | ঈ |
+| `u` | উ |
+| `uu` | ঊ |
+| `e` | এ |
+| `oi` | ঐ |
+| `o` | ও |
+| `ou` | ঔ |
+| `ri` | ঋ |
+
+### Common consonants
+
 | Latin | Assamese | Latin | Assamese |
 |---|---|---|---|
 | `k` | ক | `kh` | খ |
@@ -142,44 +157,77 @@ import 'package:flutter_js/flutter_js.dart';
 | `s` | স | `sh` | শ |
 | `S` | শ | `Sh` | ষ |
 
-### Special
+### Special keys
+
 | Latin | Assamese | Meaning |
 |---|---|---|
-| `~` | ্ | Hasanta (virama) |
+| `~` | ্ | Virama / hasanta |
 | `M` | ঁ | Chandrabindu |
 | `H` | ঃ | Visarga |
-| `\|` | । | Danda |
-| `\|\|` | ॥ | Double danda |
-| `` ` `` | ZWJ | For conjuncts |
+| `|` | । | Danda |
+| `||` | ॥ | Double danda |
+| `` ` `` | ZWJ | For conjunct shaping |
 
----
+### Conjunct examples
 
-## How conjuncts work
+- `k~t` -> ক্ত
+- `p~r` -> প্ৰ
+- `~` alone suppresses the inherent vowel
 
-Assamese uses hasanta (`্`) to join consonants:
-- Type `k~t` → ক্ত (kta conjunct)
-- Type `p~r` → প্ৰ (pra conjunct)
-- Type `~` alone acts as virama to suppress the inherent vowel
+## Development Notes
 
----
+### Add or change Keyman rules
 
-## Extending the keyboard
+Use this pattern in `assamese_phonetic.kmn`:
 
-To add new rules to the `.kmn` file, follow this pattern:
-```
+```text
 + "XX" > U+XXXX   c comment
 ```
 
-To add rules to the JS engine, add to the `this.rules` array:
-```js
-["latin", "অসমীয়া_char"],
-```
-Rules are auto-sorted by length, so insertion order doesn't matter.
+### Add or change JavaScript rules
 
----
+Update the transliteration tables in `assamese_transliterator.js`.
+
+```js
+["latin", "অসমীয়া_char"];
+```
+
+The engine sorts rule groups longest-first, so longer digraphs win over shorter matches.
+
+## Verify Your Changes
+
+### Python transliteration tests
+
+```bash
+python3 -m unittest tests/test_transliteration_core.py -v
+```
+
+### JavaScript transliteration regression tests
+
+```bash
+node scripts/run_js_transliteration_tests.js
+```
+
+### Chrome extension tests
+
+```bash
+node --test tests/chrome-extension/content.test.js tests/chrome-extension/popup.test.js
+```
+
+### Experimental browser-extension workspace
+
+There is also a TypeScript prototype in `browser-extension/`. It is not the recommended path for quick setup, but if you want to inspect it:
+
+```bash
+cd browser-extension
+npm install
+npm run typecheck
+npm test
+```
 
 ## Resources
-- Keyman Developer: https://keyman.com/developer/
-- Keyman Documentation: https://help.keyman.com/developer/
-- Assamese Unicode block: U+0980–U+09FF
-- Google Input Tools reference: https://www.google.com/inputtools/
+
+- [Keyman Developer](https://keyman.com/developer/)
+- [Keyman documentation](https://help.keyman.com/developer/)
+- Assamese Unicode block: `U+0980-U+09FF`
+- [Google Input Tools](https://www.google.com/inputtools/)
